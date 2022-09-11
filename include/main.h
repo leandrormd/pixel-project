@@ -2,7 +2,6 @@
 #include <params.h>
 #include <tensors.h>
 #include <panel.h>
-#include <bluetooth.h>
 
 // Bluetooth Declarations
 bool InitializeBluetooth(std::string device_name);
@@ -16,59 +15,6 @@ byte matrix2index(byte x, byte y);
 void setPixel(Pixel p);
 void setImage(Image img);
 
-bool InitializeBluetooth(std::string device_name) {
-    // Create the BLE Device
-    BLEDevice::init(device_name);
-    // Create the BLE Server
-    BLEServer *pServer = BLEDevice::createServer();
-    pServer->setCallbacks(new ServerCallbacks());
-    // pServer->setCallbacks(new MyServerCallbacks());
-    // Create the BLE Service
-    BLEService *pService = pServer->createService(SERVICE_UUID);
-    // Create a BLE Characteristic
-    characteristicTX = pService->createCharacteristic(
-                    CHARACTERISTIC_UUID_TX,
-                    BLECharacteristic::PROPERTY_NOTIFY
-                    );
-    characteristicTX->addDescriptor(new BLE2902());
-    BLECharacteristic *characteristic = pService->createCharacteristic(
-                                        CHARACTERISTIC_UUID_RX,
-                                        BLECharacteristic::PROPERTY_WRITE
-                                        );
-    characteristic->setCallbacks(new CharacteristicCallbacks());
-
-    // BLECharacteristic *pCharacteristic = pService->createCharacteristic(
-    //                                    SERVICE_UUID,
-    //                                    BLECharacteristic::PROPERTY_READ |
-    //                                    BLECharacteristic::PROPERTY_WRITE
-    //                                  );
-    // // pCharacteristic = pService->createCharacteristic(
-    //                   CHARACTERISTIC_UUID_RX,
-    //                   BLECharacteristic::PROPERTY_READ
-    //                   );
-                      
-    // pCharacteristic->addDescriptor(new BLE2902());
-
-    // BLECharacteristic *pCharacteristic = pService->createCharacteristic(
-    //                                      CHARACTERISTIC_UUID_RX,
-    //                                      BLECharacteristic::PROPERTY_READ
-    //                                      );
-
-    // pCharacteristic->setCallbacks(new MyCallbacks());
-
-    // Start the service
-    pService->start();
-    // BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-    // pAdvertising->addServiceUUID(SERVICE_UUID);
-    // pAdvertising->setScanResponse(true);
-    // pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
-    // pAdvertising->setMinPreferred(0x12);
-    // BLEDevice::startAdvertising();
-    // Start advertising
-    pServer->getAdvertising()->start();
-    return true;
-}
-
 Image parseImg(std::string raw) {
     Image parsed_img;
     return parsed_img;
@@ -80,7 +26,7 @@ Animation parseAni(std::string raw) {
 }
 
 bool InitializeLEDPanel() {
-    FastLED.addLeds<CHIP_TYPE, LED_PIN, RGB>(panel, NUM_LEDS);
+    FastLED.addLeds<CHIP_TYPE, LED_PIN, GRB>(panel, NUM_LEDS);
     FastLED.setBrightness(DEFAULT_BRIGHTNESS_LEVEL);
     return true;
 }

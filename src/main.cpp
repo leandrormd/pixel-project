@@ -1,57 +1,103 @@
 #include <main.h>
+#include <smileHappy.h>
+#include <smileSad.h>
+#include <DNSServer.h> 
+#include <ESPAsyncWebServer.h>
+#include <ESPAsyncWiFiManager.h>
+#include <WiFi.h>
 
-std::string raw_data;
+AsyncWebServer server(80);
+DNSServer dns;
+
+char raw_data;
+char msg;
+
 
 void setup() {
+    AsyncWiFiManager manager(&server, &dns);
     Serial.begin(115200);
+
+    //manager.resetSettings();
+    manager.autoConnect("Pixel LED Robbyson");
+
 	InitializeLEDPanel();
-	InitializeBluetooth("Pixel-Project");
+    FastLED.clear(true);
 }
 
 void loop() {
-    if(isConnected) {
-        // characteristicTX->setValue("Hello World");
-        // characteristicTX->notify();
-        std::string msg = recv();
-        if(msg != raw_data) {
-            raw_data = msg;
-            for (int i = 0; raw_data[i] != '\0'; i++) {
-                Serial.print(raw_data[i]);
-            }
-            if(raw_data[0] == '1') {
-                blink(255, 255, 255);
-                blink(0, 0, 0);
-            }
-            else if(raw_data[0] == '2') {
-                goCrazy();
-                FastLED.clear();
-                FastLED.show();
-            }
-            else if(raw_data[0] == '3') {
-                Fire();
-                FastLED.clear();
-                FastLED.show();
-            }
-            else if(raw_data[0] == 'r') {
-                fill_solid(panel, NUM_LEDS, CRGB::Red);
-                FastLED.show();
-            }
-            else if(raw_data[0] == 'g') {
-                fill_solid(panel, NUM_LEDS, CRGB::Green);
-                FastLED.show();
-            }
-            else if(raw_data[0] == 'b') {
-                fill_solid(panel, NUM_LEDS, CRGB::Blue);
-                FastLED.show();
-            }
-            else if(raw_data[0] == '0') {
-                FastLED.clear();
+    // characteristicTX->setValue("Hello World");
+    // characteristicTX->notify();
+    if ( Serial.available() > 0) {
+        msg = Serial.read();
+    }
+    else{
+        if (msg == '4') {
+            msg = 5;
+        }
+        else{
+            msg = 5;
+        }
+        delay(1000);
+    }
+    if(msg != raw_data || msg == '4' || msg == '5' || msg == '6') {
+        raw_data = msg;
+        if(raw_data == '1') {
+            blink(255, 255, 255);
+            blink(0, 0, 0);
+        }
+        else if(raw_data == '2') {
+            goCrazy();
+            FastLED.clear();
+            FastLED.show();
+        }
+        else if(raw_data == '3') {
+            Fire();
+            FastLED.clear();
+            FastLED.show();
+        }
+        else if(raw_data == '4'){
+            //FastLED.clear(true);4355
+            EVERY_N_MILLISECONDS(100) {
+                memcpy(&panel[0], &smileHappy[0], NUM_LEDS * sizeof(CRGB));
                 FastLED.show();
             }
         }
-    }
-    else {
-        Serial.print('NO');
+        else if(raw_data == '5'){
+            //FastLED.clear(true);
+            EVERY_N_MILLISECONDS(100) {
+                memcpy(&panel[0], &smileSad[0], NUM_LEDS * sizeof(CRGB));
+                FastLED.show();
+            }
+        }
+        else if(raw_data == '6'){
+            //FastLED.clear(true);
+            fill_solid(panel, NUM_LEDS, CRGB::Red);
+            FastLED.show();
+            delay(500);
+            fill_solid(panel, NUM_LEDS, CRGB::Green);
+            FastLED.show();
+            delay(500);
+            fill_solid(panel, NUM_LEDS, CRGB::Blue);
+            FastLED.show();
+            delay(500);
+        }
+        else if(raw_data == 'r') {
+            fill_solid(panel, NUM_LEDS, CRGB::Red);
+            FastLED.show();
+        }
+        else if(raw_data == 'g') {
+            fill_solid(panel, NUM_LEDS, CRGB::Green);
+            FastLED.show();
+        }
+        else if(raw_data == 'b') {
+            fill_solid(panel, NUM_LEDS, CRGB::Blue);
+            FastLED.show();
+        }
+        else if(raw_data == '0') {
+            FastLED.clear();
+            FastLED.show();
+        }
+        //Serial.println("Finalizado");
     }
     // if(isImage) {
     //     setImage(parseImg(raw_data));
@@ -60,5 +106,5 @@ void loop() {
     //     setAnimation(parseAni(raw_data));
     // }
     // setImage(parseImg(raw_data));
-    delay(DELAY_TIME * 100);
+    //delay(DELAY_TIME * 100);
 }

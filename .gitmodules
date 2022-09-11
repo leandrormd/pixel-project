@@ -4,3 +4,12 @@
 [submodule "lib/BLE"]
 	path = lib/BLE
 	url = https://github.com/nkolban/ESP32_BLE_Arduino.git
+[submodule "lib/LEDText"]
+	path = lib/LEDText
+	url = https://github.com/AaronLiddiment/LEDText.git
+[submodule "RGBLEDS"]
+	path = RGBLEDS
+	url = https://github.com/AaronLiddiment/RGBLEDS.git
+[submodule "lib/RGBLEDS"]
+	path = lib/RGBLEDS
+	url = https://github.com/AaronLiddiment/RGBLEDS.git
